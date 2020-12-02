@@ -43,17 +43,11 @@ public class Apicon {
         }
         return null;
     }
-
     public JSONObject Requestbuilder(String function)
     {
 
         HashMap<String,String> blblb = new HashMap<String,String>();
 
-        switch (function){
-          /*  for (String elm:) {
-                case elm: break;
-            }*/
-        }
         return new JSONObject();
     }
 
