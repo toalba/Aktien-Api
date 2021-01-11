@@ -1,30 +1,17 @@
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.scene.control.*;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 public class GUI extends Application{
 
     public void start(Stage s)
     {
-
+        Apicon apicon = new Apicon();
+       // apicon.Apihandler(apicon.Requestbuilder());
+        drawLineDiagram(s,"","","Negga",apicon.DataSheetResult(apicon.WebRequest("IBM")));
     }
 
     public void drawLineDiagram(Stage s,String xlabel,String ylabel,String title,ArrayList<Datasheet> daten)
@@ -45,7 +32,10 @@ public class GUI extends Application{
         lineChart.getData().add(series);
         s.show();
     }
+    public void searcher(Stage s)
+    {
 
+    }
 
 
     public static void main(String args[]){

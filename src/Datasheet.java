@@ -1,9 +1,10 @@
 public class Datasheet {
     public String Datum;
-    public Number Wert;
-    public Datasheet(String datum,int wert)
+    public Double Wert;
+    public Datasheet(String datum, double wert)
     {
         this.Datum=datum;
         this.Wert=wert;
     }
 }
+
