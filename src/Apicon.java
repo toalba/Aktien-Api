@@ -16,10 +16,10 @@ public class Apicon {
     private String function = "?function=";
     private String symbol = "&symbol=";
 
-    public JSONObject WebRequest(String urlstring) {
+    private JSONObject WebRequest(String urlstring) {
         HttpURLConnection connection;
         try {
-            URL url = new URL("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=1AD6CE6LV8OFT02F");
+            URL url = new URL(urlstring);
             connection =(HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             connection.setUseCaches(false);
@@ -41,31 +41,12 @@ public class Apicon {
         }
         return null;
     }
-    public ArrayList<Webrequestresult> Apihandler(JSONObject webresult)
+
+    public JSONObject Requestbuilder(String aktie)
     {
-        ArrayList<Webrequestresult> wresult =  new ArrayList<Webrequestresult>();
-        try {
-            JSONObject data = webresult.getJSONObject("Time Series (Daily)");
-            System.out.println(data.get("2020-08-07"));
-            for (int i = 0; i < data.length(); i++) {
-
-            }
-
-        }catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return new ArrayList<Webrequestresult>();
-    }
-
-
-    public JSONObject Requestbuilder()
-    {
-        String url=requestString+function+"TIME_SERIES_DAILY"+symbol+"TSLA"+key;
+        String url=requestString+function+"TIME_SERIES_DAILY"+symbol+aktie+key;
         return WebRequest(url);
     }
-
-
 
     public JSONObject Webrequestsucher(String keyword) {
         HttpURLConnection connection;
@@ -114,12 +95,17 @@ public class Apicon {
         ArrayList<Datasheet> arrayList = new ArrayList<>();
         try
         {
+            JSONObject info = json.getJSONObject("Meta Data");
+            String symbol = (String)info.get("2. Symbol");
+            DB.CreateTable(symbol);
             JSONObject result = json.getJSONObject("Time Series (Daily)");
             for(int i = 0; i < result.length(); i++)
             {
                 String datum = result.names().get(i).toString();
                 JSONObject wert = (JSONObject) result.get(datum);
-                arrayList.add(new Datasheet(datum,Double.parseDouble(wert.get("4. close").toString())));
+                Double kurswert = Double.parseDouble(wert.get("4. close").toString());
+                arrayList.add(new Datasheet(datum,kurswert));
+                DB.InsertStatement(symbol,datum,kurswert);
             }
         }
         catch (Exception e)
