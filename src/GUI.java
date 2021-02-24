@@ -1,8 +1,14 @@
 import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.*;
+import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class GUI extends Application{
@@ -35,6 +41,7 @@ public class GUI extends Application{
         }
         //lineChart.getData().add(zwohundert);
         lineChart.getData().add(series);
+        saveAsPng(lineChart,"/home/toalba/Java2/Aktien-Api/img/chart.png");
         s.show();
     }
     public void drawsearcher(Stage s)
@@ -45,6 +52,15 @@ public class GUI extends Application{
     public void searcher(Stage s)
     {
 
+    }
+    public void saveAsPng(LineChart lineChart, String path) {
+        WritableImage image = lineChart.snapshot(new SnapshotParameters(), null);
+        File file = new File(path);
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
