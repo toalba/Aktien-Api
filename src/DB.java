@@ -1,10 +1,7 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DB
@@ -16,47 +13,32 @@ public class DB
     private static String userName = "root";
     private static String password = "wa22er!wasser";
     public static ArrayList<Datasheet> _Lastdataselect = new ArrayList<Datasheet>();
-    /*public static void Connection()
+
+    public static void InsertStatement(String symbol,String date, double number,double zwoh)
     {
-        String hostname = "localhost";
-        String dbName = "Aktien";
-        String dBPort = "3306";
-        String userName = "root";
-        String password = "SHW_Destroyer";
-		 
-        try
-        {
-            Class.forName("org.mariadb.jdbc.Driver");
-        }
-        catch(Exception e)
-        {
-            System.out.println("Treiber konnte nicht richtig geladen werden ... ");
-            e.printStackTrace();
-        }
-        try
-        {
-               con = DriverManager.getConnection("jdbc:mysql://"+hostname+"/"+dbName+"?user="+userName+"&password="+password);
-               Statement statement = con.createStatement();
-               //ResultSet rS=statement.executeQuery("Select * from ");
-
-               con.close();
-        }
-        catch (SQLException e)
-        {
-               e.printStackTrace();
-        }
-    }*/
-
-    public static void InsertStatement(String symbol,String date, double number)
-    {
-
-        String insertInTable =  "REPLACE INTO "+symbol+" VALUES('"+date+"', "+number+");";
-
+        String insertInTable =  "REPLACE INTO "+symbol+" VALUES('"+symbol+"','"+date+"', "+number+","+zwoh+");";
         try
         {
             con = DriverManager.getConnection("jdbc:mysql://"+hostname+"/"+dbName+"?user="+userName+"&password="+password);
             Statement stm = con.createStatement();
-            stm.execute(insertInTable);
+            stm.executeQuery(insertInTable);
+        }
+        catch (SQLException e)
+        {
+            System.out.println("Die Tabelle konnte die Values nicht aufnehmen");
+            e.printStackTrace();
+        }
+    }
+    public static void Updatezwoah(String symbol,String date,double zwoh )
+    {
+        String insertInTable =  "UPDATE "+symbol+" SET ZWOH="+zwoh+" WHERE DATE = ?;";
+        try
+        {
+            con = DriverManager.getConnection("jdbc:mysql://"+hostname+"/"+dbName+"?user="+userName+"&password="+password);
+            Statement stm = con.createStatement();
+            PreparedStatement preparedStmt = con.prepareStatement(insertInTable);
+            preparedStmt.setDate(1, java.sql.Date.valueOf("2021-01-26"));
+            preparedStmt.executeQuery();
         }
         catch (SQLException e)
         {
@@ -67,7 +49,7 @@ public class DB
 
     public static void CreateTable(String symbol)
     {
-        String createTable = "CREATE TABLE IF NOT EXISTS "+symbol+"(DATE CHAR(10) PRIMARY KEY, VALUE DOUBLE);";
+        String createTable = "CREATE TABLE IF NOT EXISTS "+symbol+"(SYMBOL CHAR(10) ,DATE DATE PRIMARY KEY, CLOSE DOUBLE,ZWOH DOUBLE );";
 
         try
         {
@@ -90,11 +72,10 @@ public class DB
             Statement stm = con.createStatement();
             ResultSet selection = stm.executeQuery(selectCMD);
             stm.execute(selectCMD);
-            System.out.println("Datum      Wert");
             while(selection.next())
             {
                 String date = selection.getString("Date");
-                Double val = selection.getDouble("Value");
+                Double val = selection.getDouble("Close");
                 selectsheet.add(new Datasheet(date,val));
             }
             _Lastdataselect=selectsheet;
@@ -103,6 +84,50 @@ public class DB
         {
             System.out.println("Konnte keine Select Abfrage durchführen");
             e.printStackTrace();
+        }
+    }
+    public static void SelectAVGStatement(String symbol){
+        String selectAVGCMD = "SELECT AVG(close) FROM " + symbol + " WHERE DATE BETWEEN DATE_SUB(?, INTERVAL 200 DAY) AND ?;";
+        Connection con = null;
+        Statement stmt = null;
+        Date avgDate = new Date();
+        try
+        {
+            Class.forName("org.mariadb.jdbc.Driver");
+            con  = DriverManager.getConnection("jdbc:mysql://"+hostname+"/"+dbName+"?user="+userName+"&password="+password);
+
+
+            stmt = con.createStatement();
+            PreparedStatement preparedStmt = con.prepareStatement(selectAVGCMD);
+            preparedStmt.setDate(1, java.sql.Date.valueOf("2021-01-26"));
+            preparedStmt.setDate(2, java.sql.Date.valueOf("2021-01-26"));
+            ResultSet rs = preparedStmt.executeQuery();
+            while (rs.next())
+            {
+                DB.Updatezwoah(symbol,"2021-01-26",rs.getDouble("AVG(close)"));
+            }
+
+        }catch (SQLException e)
+        {
+            System.out.println(e.getMessage());
+        }catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }finally {
+            try {
+                if (stmt != null) {
+                    con.close();
+                }
+            } catch (SQLException e)
+            {
+            }
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 

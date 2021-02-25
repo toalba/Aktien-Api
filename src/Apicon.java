@@ -44,7 +44,7 @@ public class Apicon {
 
     public JSONObject Requestbuilder(String aktie)
     {
-        String url=requestString+function+"TIME_SERIES_DAILY"+symbol+aktie+key;
+        String url=requestString+function+"TIME_SERIES_DAILY&outputsize=full"+symbol+aktie+key;
         return WebRequest(url);
     }
 
@@ -105,7 +105,9 @@ public class Apicon {
                 JSONObject wert = (JSONObject) result.get(datum);
                 Double kurswert = Double.parseDouble(wert.get("4. close").toString());
                 arrayList.add(new Datasheet(datum,kurswert));
-                DB.InsertStatement(symbol,datum,kurswert);
+            }
+            for (Datasheet d:arrayList) {
+                DB.InsertStatement(symbol,d.Datum,d.Wert,0);
             }
         }
         catch (Exception e)
