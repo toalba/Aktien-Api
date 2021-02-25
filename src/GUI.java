@@ -26,10 +26,10 @@ public class GUI extends Application{
         Apicon apicon = new Apicon();
         DB.CreateSTM();
         // apicon.Apihandler(apicon.Requestbuilder());
-        //apicon.DataSheetResult(apicon.Requestbuilder("TSLA"));
-        //DB.SelectStatement("TSLA");
-        DB.SelectAVGStatement("TSLA");
-        //drawLineDiagram(s,"x","z","Dia",DB._Lastdataselect);
+        apicon.DataSheetResult(apicon.Requestbuilder("TSLA"));
+        DB.SelectStatement("TSLA");
+        //DB.SelectAVGStatement("TSLA");
+        drawLineDiagram(s,"x","z","Dia",DB._Lastdataselect);
     }
 
     public void drawLineDiagram(Stage s,String xlabel,String ylabel,String title,ArrayList<Datasheet> daten)
@@ -45,6 +45,7 @@ public class GUI extends Application{
         for (Datasheet d :daten)
         {
             series.getData().add(new XYChart.Data<>(d.Datum,d.Wert));
+            zwohundert.getData().add(new XYChart.Data<>(d.Datum,200));
         }
         series.setName("Aktienverlauf");
         zwohundert.setName("200erLinie");
@@ -96,8 +97,7 @@ public class GUI extends Application{
         lineChart.setCreateSymbols(false);
         lineChart.getData().add(zwohundert);
         //lineChart.getData().add(zwohundert);
-        lineChart.getData().add(series);
-        saveAsPng(lineChart,"/home/toalba/Java2/Aktien-Api/img/chart.png");
+        saveAsPng(lineChart,"C:\\Users\\toalba\\Desktop\\schule\\Aktien-Api\\img/chart.png");
         s.show();
     }
     public void drawsearcher(Stage s)

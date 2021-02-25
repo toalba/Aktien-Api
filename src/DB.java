@@ -6,12 +6,21 @@ import java.util.List;
 
 public class DB
 {
-    static Connection con;
-    private static String hostname = "localhost";
-    private static String dbName = "aktien";
+    private static String hostname = "sql11.freemysqlhosting.net";
+    private static String dbName = "sql11395223";
     private String dBPort = "3306";
-    private static String userName = "root";
-    private static String password = "wa22er!wasser";
+    private static String userName = "sql11395223";
+    private static String password = "P6Hbwr3Sm4";
+    static Connection con;
+
+    static {
+        try {
+            con = DriverManager.getConnection("jdbc:mysql://"+hostname+"/"+dbName+"?user="+userName+"&password="+password);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
     public static ArrayList<Datasheet> _Lastdataselect = new ArrayList<Datasheet>();
 
     public static void InsertStatement(String symbol,String date, double number,double zwoh)
@@ -19,7 +28,6 @@ public class DB
         String insertInTable =  "REPLACE INTO "+symbol+" VALUES('"+symbol+"','"+date+"', "+number+","+zwoh+");";
         try
         {
-            con = DriverManager.getConnection("jdbc:mysql://"+hostname+"/"+dbName+"?user="+userName+"&password="+password);
             Statement stm = con.createStatement();
             stm.executeQuery(insertInTable);
         }
