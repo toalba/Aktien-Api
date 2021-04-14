@@ -1,23 +1,32 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 public class DB
 {
-    private static String hostname = "sql11.freemysqlhosting.net";
-    private static String dbName = "sql11395223";
-    private String dBPort = "3306";
-    private static String userName = "sql11395223";
-    private static String password = "P6Hbwr3Sm4";
+    private static Properties config = new Properties();
+    private static String hostname = config.getProperty("Host");
+    private static String dbName = config.getProperty("dbname");
+    private String dBPort = config.getProperty("dbport");
+    private static String userName = config.getProperty("username");
+    private static String password = config.getProperty("password");
     static Connection con;
 
     static {
         try {
+            config.load(new FileInputStream("/resource/config.properties"));
+            System.out.println(hostname);
             con = DriverManager.getConnection("jdbc:mysql://"+hostname+"/"+dbName+"?user="+userName+"&password="+password);
-        } catch (SQLException throwables) {
+        } catch (SQLException | FileNotFoundException throwables) {
             throwables.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
